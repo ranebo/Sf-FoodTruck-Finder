@@ -14,13 +14,6 @@ export class Map extends React.Component {
     };
   }
 
-  componentWillMount() {
-    request.post('/api/sfFoodTrucks', {}, (err, res) => {
-      if (err) { console.log("Error getting food truck list (Map Component: ", err); }
-      this.setState( {trucks: res.body});
-    });
-  }
-
   componentDidMount() {
     let mapOptions = {
       center: this.mapCenterLatLng(),
@@ -29,7 +22,11 @@ export class Map extends React.Component {
     //create map
     map = new google.maps.Map(ReactDOM.findDOMNode(this), mapOptions);
     //create search marker
-    let marker = this.addMarker(this.props.mapCenterLat, this.props.mapCenterLng, map, "Choosen Location");
+    let marker = new google.maps.Marker({
+      position: this.mapCenterLatLng(),
+      title: "Choosen Location",
+      map
+    });
     //set location for autocomplete searchbar
     const input = document.getElementById('pac-input');
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
@@ -37,31 +34,41 @@ export class Map extends React.Component {
     this.setState({ map: this.state.map.concat([map]), mainMarker: this.state.mainMarker.concat([marker]) });
     //add autocomplete functionality
     this.addAutocomplete(map);
+    //get Food Trucks list
+    request.post('/api/sfFoodTrucks', {}, (err, res) => {
+      if (err) { console.log("Error getting food truck list (Map Component: ", err); }
+      this.setState( {trucks: res.body});
+      this.addTruckMarkers(map);
+    });
   }
 
   mapCenterLatLng () {
-    var props = this.props;
+    let props = this.props;
     return new google.maps.LatLng(props.mapCenterLat, props.mapCenterLng);
   }
 
-  addMarker (lat, long, map, title) {
+  formatMarker (lat, long, map, title) {
+    //icon hosted from my google drive
+    let icon = 'https://049d1e9f5c8486fa15c905c1c2e7feafadc697fd-www.googledrive.com/host/0B781CHOXBe3wVjBPNFZzLVlNRVk/foodTruck.png';
     var marker = new google.maps.Marker({
       position: new google.maps.LatLng(lat, long),
+      icon,
       title,
       map
     });
     return marker;
   }
 
-  addTruckMarkers (lat, long, map, title) {
-
-    for (let i = 0; i < this.state.mainMarker.length; i++) {
-      this.state.mainMarker[i].setMap(map);
+  addTruckMarkers (map) {
+    for (let i = 0; i < this.state.trucks.length; i++) {
+      let truck = this.state.trucks[i];
+      this.formatMarker(truck.latitude, truck.longitude, map, truck.applicant);
     }
   }
 
 
   addAutocomplete (map) {
+    //Grab input box and add autocomplete
     const input = document.getElementById('pac-input');
     const autocomplete = new google.maps.places.Autocomplete(input);
     autocomplete.bindTo('bounds', map);
@@ -70,7 +77,7 @@ export class Map extends React.Component {
       map: map,
       anchorPoint: new google.maps.Point(0, -29)
     });
-
+    //add listener for when user selects location
     autocomplete.addListener('place_changed', () => {
     console.log("UDPATE", this.state)
       infowindow.close();
@@ -101,6 +108,7 @@ export class Map extends React.Component {
       infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
       infowindow.open(map, marker);
       autocomplete.setTypes(['address', 'establishment', 'geocode']);
+      //remove old place marker from state and add new one
       this.state.mainMarker.pop().setMap(null);
       this.setState({mainMarker: this.state.mainMarker.concat([marker])});
       this.addAutocomplete(map);
@@ -121,7 +129,7 @@ export class Map extends React.Component {
 }
 
 Map.defaultProps = {
-  initialZoom: 12,
+  initialZoom: 17,
   mapCenterLat: 37.774929,
   mapCenterLng: -122.419416,
 }
