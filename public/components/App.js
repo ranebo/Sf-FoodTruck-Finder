@@ -38,7 +38,7 @@ export class Map extends React.Component {
     request.post('/api/sfFoodTrucks', {}, (err, res) => {
       if (err) { console.log("Error getting food truck list (Map Component: ", err); }
       this.setState( {trucks: res.body});
-      this.addTruckMarkers(map);
+      this.addMarkers(map);
     });
   }
 
@@ -47,22 +47,39 @@ export class Map extends React.Component {
     return new google.maps.LatLng(props.mapCenterLat, props.mapCenterLng);
   }
 
-  formatMarker (lat, long, map, title) {
+  formatMarker (truck, map) {
     //icon hosted from my google drive
     let icon = 'https://049d1e9f5c8486fa15c905c1c2e7feafadc697fd-www.googledrive.com/host/0B781CHOXBe3wVjBPNFZzLVlNRVk/foodTruck.png';
+
+      var contentString = '<div id="content">'+
+        '<div id="siteNotice"></div>'+
+        '<h1 id="firstHeading" class="firstHeading">' + truck.applicant + '</h1>'+
+        '<div id="bodyContent">'+
+          '<h4>' + truck.fooditems + '</h4>'+
+          '<p>Hours: '+ truck.dayshours +'</p>'+
+          '<p>Address: '+ truck.address + '</p>' +
+          '<p>Get schedule: <a href="' + truck.schedule + '" >'+ truck.applicant + '</a> '+ '</p>' +
+        '</div>'+
+      '</div>';
+    let infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+
     var marker = new google.maps.Marker({
-      position: new google.maps.LatLng(lat, long),
+      position: new google.maps.LatLng(truck.latitude, truck.longitude),
+      title: truck.applicant,
       icon,
-      title,
       map
     });
-    return marker;
+    marker.addListener('click', () => {
+      infowindow.open(map, marker);
+    });
   }
 
-  addTruckMarkers (map) {
+  addMarkers (map) {
     for (let i = 0; i < this.state.trucks.length; i++) {
       let truck = this.state.trucks[i];
-      this.formatMarker(truck.latitude, truck.longitude, map, truck.applicant);
+      this.formatMarker(truck, map);
     }
   }
 
