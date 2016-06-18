@@ -35,7 +35,8 @@ module.exports = {
         query: {
           presets: ['es2015', 'react', 'stage-0', 'react-hmre'],
         }
-      }
+      },
+      { test: /\.css$/, loader: "style-loader!css-loader" }
     ]
   },
 };
