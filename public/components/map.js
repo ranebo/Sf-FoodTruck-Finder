@@ -3,8 +3,48 @@ import ReactDOM from 'react-dom';
 import { default as _ } from 'lodash';
 import styles from '../styles/styles.css';
 import request from '../util/rest-helpers.js';
+import Datalist from 'react-datalist';
 import ClosestListEntry from './closest-list-entry.js';
 import { Grid, Col, Row, Panel, Jumbotron, Image } from 'react-bootstrap';
+
+
+
+
+export default class TruckSearch extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      options: [],
+    }
+  }
+
+  componentWillReceiveProps() {
+    let options = [];
+    this.props.trucks.forEach((truck) => {
+      options.push(truck.info.applicant + ' @ ' + truck.info.address);
+    });
+    this.setState({options});
+  }
+
+  onOptionSelected(truck) {
+    this.props.handleSearch(truck);
+  }
+
+  render() {
+    return (
+      <div className={'searchTrucks'}>
+        <h2 style={{color: 'lightgrey'}}>Search for a Food Truck!</h2>
+          <Datalist
+            className='truckOptionList'
+            list='truckOptions'
+            options= {this.state.options}
+            placeholder='e.g. Senor Sisig'
+            onOptionSelected={this.onOptionSelected.bind(this)}/>
+      </div>
+    )
+  }
+}
+
 
 export default class Map extends React.Component {
   constructor(props) {
@@ -15,7 +55,6 @@ export default class Map extends React.Component {
       trucks: [],
       closestTrucks: [],
       previousSelection: [],
-      searchOptions: [],
       distThreshold: 250, //Initialize about 3 block distance
     };
   }
@@ -33,7 +72,7 @@ export default class Map extends React.Component {
       title: "Choosen Location",
       map
     });
-    //set location for autocomplete searchbar
+    //set location for location autocomplete searchbar
     const input = document.getElementById('pac-input');
     map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
     //set map and mainMarker
@@ -46,7 +85,7 @@ export default class Map extends React.Component {
       let trucks = res.body;
       this.addMarkers(map, trucks);
       this.findClosest();
-      this.setState
+      this.setState;
     });
   }
 
@@ -183,6 +222,22 @@ export default class Map extends React.Component {
     this.setState({ previousSelection: this.state.previousSelection.concat([{ marker, infowindow }]) });
   }
 
+  handleTruckSearch(truck) {
+    let dividerIndex = truck.indexOf('@');
+    console.log("Madeit",  truck, dividerIndex);
+    let applicant = truck.slice(0, dividerIndex - 1);
+    let address = truck.slice(dividerIndex + 1);
+    let trucks = this.state.trucks;
+    let foundTruck;
+    for (let i = 0; i < trucks.length; i++ ) {
+      if (trucks[i].info.applicant === applicant && trucks[i].info.address ) {
+        foundTruck = trucks[i];
+        break;
+      }
+    }
+    this.goToTruck(foundTruck);
+  }
+
 
   render() {
     return (
@@ -194,16 +249,7 @@ export default class Map extends React.Component {
                   <Image  className={'logo'} width="200" responsive src='https://049d1e9f5c8486fa15c905c1c2e7feafadc697fd-www.googledrive.com/host/0B781CHOXBe3wVjBPNFZzLVlNRVk/foodTruck.png'/>
               </Col>
               <Col md={7}>
-                <div className={'searchTrucks'}>
-                  <h2 style={{color: 'lightgrey'}}>Search for a Food Truck!</h2>
-                    <datalist id={'truckOptions'}>
-                      <option value={'oneoption'}/>
-                      <option value={'twooption'}/>
-                      <option value={'threeoption'}/>
-                      <option value={'fouroption'}/>
-                  </datalist>
-                  <input className={'truckOptionList'} type="text" list={'truckOptions'} placeholder={'i.g. Senor Sisig...'}/>
-                  </div>
+                <TruckSearch handleSearch={this.handleTruckSearch.bind(this)} trucks={this.state.trucks}/>
               </Col>
             </Row>
           </Grid>

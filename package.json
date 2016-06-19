@@ -19,6 +19,7 @@
     "react": "^15.1.0",
     "react-addons-update": "^15.1.0",
     "react-bootstrap": "^0.29.5",
+    "react-datalist": "^3.0.0",
     "react-dom": "^15.1.0",
     "react-google-maps": "^4.11.0",
     "request-promise": "^3.0.0",
