@@ -15,11 +15,13 @@ SF Food Truck Finder
 
 ## Introduction
 
-Food Trucks and other Street Food venders have exploded in popularity in the San Francsico Bay Area. (Check out: https://offthegrid.com/)
+Food Trucks and other Street Food venders have exploded in popularity in the San Francsico Bay Area (Check out: https://offthegrid.com/).
 There is most likely one right around the corner, but (up until now)
 there has been no easy way to browse SF Food Trucks or find the ones nearest you.
 SF Food Truck Finder allows you to search for a particular Food Truck, find the ones near you,
 or peruse the map and see what's out there!
+(Thanks to: [DataSF](http://www.datasf.org/): [Food
+Trucks](https://data.sfgov.org/Permitting/Mobile-Food-Facility-Permit/rqzj-sfat))
 
 ## Usage
 
@@ -35,7 +37,7 @@ Run `npm install` from the root directory.
 
 ### Development Server
 
-Simply run `npm start` to fire up the express server and Webpack middleware which serves a live, hot-reloading version of the application.
+Simply run `npm start` to fire up the express server and Webpack middleware, which serves a live, hot-reloading version of the application.
 
 ### Testing
 Run the test Mocha-Chai suite with `npm test`
