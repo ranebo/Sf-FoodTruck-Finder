@@ -129,10 +129,9 @@ export default class Map extends React.Component {
       }
     }
     this.setState({trucks: this.state.trucks.concat(markers) });
-    console.log(this.state);
   }
 
-  findClosest () {
+  findClosest (e) {
     let center = this.state.mainMarker[0].getPosition();
     let threshold = this.state.distThreshold || 10;
     let trucks = this.state.trucks;
@@ -144,6 +143,7 @@ export default class Map extends React.Component {
       }
     }
     this.setState({ closestTrucks: closest});
+    e.preventDefault()
   }
 
 
@@ -250,10 +250,6 @@ export default class Map extends React.Component {
     })
   }
 
-  submitWalkingDistance() {
-    this.findClosest()
-  }
-
 
   render() {
     return (
@@ -277,7 +273,7 @@ export default class Map extends React.Component {
                 <FormGroup>
                   <InputGroup>
                     <InputGroup.Button>
-                      <Button onClick={this.submitWalkingDistance.bind(this)} bsStyle="primary">Walk Time</Button>
+                      <Button onClick={this.findClosest.bind(this)} type='submit' bsStyle="primary">Walk Time</Button>
                     </InputGroup.Button>
                     <FormControl type='number' onChange={this.updateWalkingDistance.bind(this)} value={this.state.distThreshold} />
                   </InputGroup>
