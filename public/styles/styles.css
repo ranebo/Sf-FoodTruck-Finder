@@ -1,3 +1,22 @@
+body {
+  background: lightgrey;
+}
+#map {
+  width: 700px;
+  height: 700px;
+}
+
+.listEntry {
+  border: 1px solid lightgrey;
+  border-radius: 2px;
+  padding: 10px;
+  margin-top: 5px
+}
+#listConatiner {
+  max-height: 700px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
 .controls {
   margin-top: 10px;
   border: 1px solid transparent;
@@ -23,3 +42,4 @@
 #pac-input:focus {
   border-color: #4d90fe;
 }
+

@@ -5,6 +5,39 @@ import request from '../util/rest-helpers.js';
 import styles from '../styles/styles.css';
 import { Grid, Col, Row, Panel, Jumbotron } from 'react-bootstrap';
 
+
+
+
+
+
+export default class ClosestListEntry extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
+  }
+
+  render() {
+    const truck = this.props.truck;
+    return (
+      <div onClick={this.props.handleClick} className={'listEntry'}>
+        <h4>{truck.info.applicant}</h4>
+        <p>Address: {truck.info.address}</p>
+        <p>Hours: {truck.info.dayshours}</p>
+        <p>{truck.info.fooditems}</p>
+      </div>
+    )
+  }
+}
+
+
+
+
+
+
+
+
+
 export default class Map extends React.Component {
   constructor(props) {
     super(props);
@@ -13,6 +46,7 @@ export default class Map extends React.Component {
       mainMarker: [],
       trucks: [],
       closestTrucks: [],
+      previousSelection: [],
       distThreshold: 250, //Initialize about 3 block distance
     };
   }
@@ -55,22 +89,7 @@ export default class Map extends React.Component {
     //icon hosted from my google drive
     let icon = 'https://049d1e9f5c8486fa15c905c1c2e7feafadc697fd-www.googledrive.com/host/0B781CHOXBe3wVjBPNFZzLVlNRVk/foodTruck.png';
 
-    let contentString = (
-      '<div id="content">'+
-        '<div id="siteNotice"></div>'+
-        '<h1 id="firstHeading" class="firstHeading">' + truck.applicant + '</h1>'+
-        '<div id="bodyContent">'+
-          '<h4>' + truck.fooditems + '</h4>'+
-          '<p>Hours: '+ truck.dayshours +'</p>'+
-          '<p>Address: '+ truck.address + '</p>' +
-        //  '<p>Get schedule: <a href="' + truck.schedule + '" >'+ truck.applicant + '</a> '+ '</p>' +
-        '</div>'+
-      '</div>'
-    );
-    let infowindow = new google.maps.InfoWindow({
-      content: contentString
-    });
-
+    let infowindow = this.setInfoWindowContent(truck);
     var marker = new google.maps.Marker({
       position: new google.maps.LatLng(truck.latitude, truck.longitude),
       title: truck.applicant,
@@ -109,7 +128,6 @@ export default class Map extends React.Component {
       }
     }
     this.setState({ closestTrucks: closest});
-      console.log("State", this.state);
   }
 
 
@@ -161,12 +179,43 @@ export default class Map extends React.Component {
     });
   }
 
+  setInfoWindowContent (truck) {
+    let contentString = (
+      '<div id="content">'+
+        '<div id="siteNotice"></div>'+
+        '<h2 id="firstHeading" class="firstHeading">' + truck.applicant + '</h2>'+
+        '<div id="bodyContent">'+
+          '<h5>' + truck.fooditems + '</h5>'+
+          '<p>Hours: '+ truck.dayshours +'</p>'+
+          '<p>Address: '+ truck.address + '</p>' +
+        //  '<p>Get schedule: <a href="' + truck.schedule + '" >'+ truck.applicant + '</a> '+ '</p>' +
+        '</div>'+
+      '</div>'
+    );
+    let infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+    return infowindow;
+  }
+
+  goToTruck(truck) {
+    let map = this.state.map[0];
+    let marker = truck.marker;
+    let previous = this.state.previousSelection.pop();
+    let infowindow = this.setInfoWindowContent(truck.info);
+    if (previous) {
+      previous.infowindow.close(map, previous.marker);
+    }
+    map.panTo(marker.getPosition())
+    map.setCenter(marker.getPosition())
+    map.setZoom(17)
+
+    infowindow.open(map, marker);
+    this.setState({ previousSelection: this.state.previousSelection.concat([{ marker, infowindow }]) })
+  }
+
 
   render() {
-    const style = {
-      width: '700px',
-      height: '700px'
-    }
     return (
       <Grid>
         <Row>
@@ -176,13 +225,15 @@ export default class Map extends React.Component {
         </Row>
         <Row>
           <Col md={4}>
-            <Panel header={<h1>Near You!</h1>}>
-              <>
+            <Panel id={'listConatiner'} header={<h1>Within a 10 minute walk: </h1>}>
+              {this.state.closestTrucks.map((truck, i) =>
+                <ClosestListEntry handleClick={this.goToTruck.bind(this, truck)} key={i} truck={truck}/>
+              )}
             </Panel>
           </Col>
           <Col md={8}>
             <input id={'pac-input'} className={'controls'} type={'text'} placeholder={'Enter a location...'} />
-            <div id={'map'} ref='map' style={style}></div>
+            <div id={'map'} ref='map'></div>
           </Col>
         </Row>
       </Grid>
