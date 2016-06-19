@@ -115,13 +115,18 @@ export default class Map extends React.Component {
   }
 
   addMarkers (map, trucks) {
+    let center = this.state.mainMarker[0].getPosition();
     let markers = [];
     for (let i = 0; i < trucks.length; i++) {
-      let truck = trucks[i];
-      markers.push({
-        info: truck,
-        marker: this.formatMarker(truck, map),
-      });
+      let truckPosition = new google.maps.LatLng(trucks[i].latitude, trucks[i].longitude)
+      let dist = google.maps.geometry.spherical.computeDistanceBetween(center, truckPosition);
+      if (!isNaN(dist)) {
+        let truck = trucks[i];
+        markers.push({
+          info: truck,
+          marker: this.formatMarker(truck, map),
+        });
+      }
     }
     this.setState({trucks: this.state.trucks.concat(markers) });
     console.log(this.state);
@@ -226,16 +231,16 @@ export default class Map extends React.Component {
     let dividerIndex = truck.indexOf('@');
     console.log("Madeit",  truck, dividerIndex);
     let applicant = truck.slice(0, dividerIndex - 1);
-    let address = truck.slice(dividerIndex + 1);
+    let address = truck.slice(dividerIndex + 2);
     let trucks = this.state.trucks;
     let foundTruck;
     for (let i = 0; i < trucks.length; i++ ) {
-      if (trucks[i].info.applicant === applicant && trucks[i].info.address ) {
+      if (trucks[i].info.applicant === applicant && trucks[i].info.address === address ) {
         foundTruck = trucks[i];
-        break;
+        this.goToTruck(foundTruck);
+        return;
       }
     }
-    this.goToTruck(foundTruck);
   }
 
 
