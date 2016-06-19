@@ -5,7 +5,7 @@ import styles from '../styles/styles.css';
 import request from '../util/rest-helpers.js';
 import Datalist from 'react-datalist';
 import ClosestListEntry from './closest-list-entry.js';
-import { Grid, Col, Row, Panel, Jumbotron, Image } from 'react-bootstrap';
+import { Grid, Col, Row, Panel, Jumbotron, Image, Button, FormGroup, FormControl, InputGroup, ControlLabel } from 'react-bootstrap';
 
 
 
@@ -55,7 +55,7 @@ export default class Map extends React.Component {
       trucks: [],
       closestTrucks: [],
       previousSelection: [],
-      distThreshold: 250, //Initialize about 3 block distance
+      distThreshold: '', //Initialize about 3 block distance
     };
   }
 
@@ -134,11 +134,12 @@ export default class Map extends React.Component {
 
   findClosest () {
     let center = this.state.mainMarker[0].getPosition();
+    let threshold = this.state.distThreshold || 10;
     let trucks = this.state.trucks;
     let closest = [];
     for (let i = 0; i < trucks.length; i++) {
       let dist = google.maps.geometry.spherical.computeDistanceBetween(center, trucks[i].marker.getPosition());
-      if (dist < this.state.distThreshold) {
+      if (dist < Math.abs(threshold) * 25) {
         closest.push(trucks[i]);
       }
     }
@@ -243,6 +244,16 @@ export default class Map extends React.Component {
     }
   }
 
+  updateWalkingDistance(e) {
+    this.setState({
+      distThreshold: Math.abs(e.target.value)
+    })
+  }
+
+  submitWalkingDistance() {
+    this.findClosest()
+  }
+
 
   render() {
     return (
@@ -250,10 +261,10 @@ export default class Map extends React.Component {
         <Jumbotron className={'header'}>
           <Grid fluid>
             <Row>
-              <Col md={5}>
-                  <Image  className={'logo'} width="200" responsive src='https://049d1e9f5c8486fa15c905c1c2e7feafadc697fd-www.googledrive.com/host/0B781CHOXBe3wVjBPNFZzLVlNRVk/foodTruck.png'/>
+              <Col md={5} sm={12}>
+                  <Image  className={'logo'} width="140" responsive src='https://049d1e9f5c8486fa15c905c1c2e7feafadc697fd-www.googledrive.com/host/0B781CHOXBe3wVjBPNFZzLVlNRVk/foodTruck.png'/>
               </Col>
-              <Col md={7}>
+              <Col md={7} sm={12}>
                 <TruckSearch handleSearch={this.handleTruckSearch.bind(this)} trucks={this.state.trucks}/>
               </Col>
             </Row>
@@ -262,7 +273,24 @@ export default class Map extends React.Component {
         <Grid>
           <Row>
             <Col md={4}>
-              <Panel id={'listConatiner'} header={<h1>Within a 10 minute walk: </h1>}>
+              <form>
+                <FormGroup>
+                  <InputGroup>
+                    <InputGroup.Button>
+                      <Button onClick={this.submitWalkingDistance.bind(this)} bsStyle="primary">Walk Time</Button>
+                    </InputGroup.Button>
+                    <FormControl type='number' onChange={this.updateWalkingDistance.bind(this)} value={this.state.distThreshold} />
+                  </InputGroup>
+                </FormGroup>
+              </form>
+            </Col>
+            <Col md={8}>
+            <Button  bsStyle="primary">Near Me</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col md={4}>
+              <Panel id={'listConatiner'} header={<h1>Within a {this.state.distThreshold || 10} minute walk: </h1>}>
                 {this.state.closestTrucks.map((truck, i) =>
                   <ClosestListEntry handleClick={this.goToTruck.bind(this, truck)} key={i} truck={truck}/>
                 )}

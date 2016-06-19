@@ -42,11 +42,12 @@ body {
 }
 
 .logo {
-  margin: auto;
+  float: right;
+  margin-right: 200px;
 }
 
 .searchTrucks {
-  margin-top: 65px;
+  margin-top: 30px;
 }
 
 .header {
