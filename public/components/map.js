@@ -2,134 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { default as _ } from 'lodash';
 import styles from '../styles/styles.css';
+import TruckSearch from './truck-search.js';
 import request from '../util/rest-helpers.js';
-import Datalist from 'react-datalist';
+import NearMeButton from './near-me-button.js';
+import WalkingTimeForm from './walking-time-form.js';
 import ClosestListEntry from './closest-list-entry.js';
-import { Grid, Col, Row, Panel, Jumbotron, Image, Button, FormGroup, FormControl, InputGroup, ControlLabel } from 'react-bootstrap';
+import { Grid, Col, Row, Panel, Jumbotron, Image, Button } from 'react-bootstrap';
 
-
-
-
-export default class TruckSearch extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      options: [],
-    };
-  }
-
-  componentWillReceiveProps() {
-    let options = [];
-    this.props.trucks.forEach((truck) => {
-      options.push(truck.info.applicant + ' @ ' + truck.info.address);
-    });
-    this.setState({options});
-  }
-
-  onOptionSelected(truck) {
-    this.props.handleSearch(truck);
-  }
-
-  render() {
-    return (
-      <div className={'searchTrucks'}>
-        <h2 style={{color: 'lightgrey'}}>Find a Food Truck!</h2>
-        <Datalist
-          className='truckOptionList'
-          list='truckOptions'
-          options= {this.state.options}
-          placeholder='e.g. Senor Sisig'
-          onOptionSelected={this.onOptionSelected.bind(this)}/>
-      </div>
-    )
-  }
-}
-
-
-export default class WalkingTimeForm extends React.Component{
-  constructor(props) {
-    super(props);
-  }
-
-  closest(e) {
-    this.props.closest(e);
-  }
-
-  distance(e) {
-    this.props.distance(e);
-  }
-
-  render() {
-    return (
-      <Col md={4}>
-        <form>
-          <FormGroup>
-            <InputGroup>
-              <InputGroup.Button>
-                <Button onClick={this.closest.bind(this)} type='submit' bsStyle="primary">Walk Time</Button>
-              </InputGroup.Button>
-              <FormControl type='number' onChange={this.distance.bind(this)} value={this.props.threshold} />
-            </InputGroup>
-          </FormGroup>
-        </form>
-      </Col>
-    )
-  }
-}
-
-export default class NearMeButton extends React.Component{
-  constructor(props) {
-    super(props);
-  }
-
-  findUserLocation() {
-    console.log("ITWAS CALLED")
-    let map = this.props.map;
-    let infoWindow = new google.maps.InfoWindow({map});
-
-    // Try HTML5 geolocation.
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        var pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-
-        let marker = new google.maps.Marker({
-          position: pos,
-          title: "Choosen Location",
-          map
-        });
-        infoWindow.setContent('Found You!');
-        infoWindow.open(map, marker);
-        map.setCenter(pos);
-        this.props.newMainMarker(marker);
-    }, () => {
-      handleLocationError(true, infoWindow, map.getCenter());
-    });
-    } else {
-        // Browser doesn't support Geolocation
-        handleLocationError(false, infoWindow, map.getCenter());
-      }
-
-    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
-      infoWindow.setPosition(pos);
-      infoWindow.setContent(browserHasGeolocation ?
-                            'Error: The Geolocation service failed.' :
-                          'Error: Your browser doesn\'t support geolocation.');
-    }
-  }
-
-  render() {
-    return (
-      <Col md={8}>
-        <Button onClick={this.findUserLocation.bind(this)} bsStyle="primary">Near Me</Button>
-      </Col>
-    )
-  }
-}
-
-export default class Map extends React.Component {
+export default class GoogleMap extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -142,7 +22,10 @@ export default class Map extends React.Component {
     };
   }
 
+//Initializes and Sets up Map and sets Marker to SF lat and lng
+//Sends Get Request to fetch Food Truck Data, adds them to Map, and finds Closest Trucks
   componentDidMount() {
+    console.log('Initializing Map...');
     let mapOptions = {
       center: this.mapCenterLatLng(),
       zoom: this.props.initialZoom
@@ -165,13 +48,14 @@ export default class Map extends React.Component {
     //get Food Trucks list
     request.post('/api/sfFoodTrucks', {}, (err, res) => {
       if (err) { console.log("Error getting food truck list (Map Component: ", err); }
+      console.log('Getting list of food trucks...')
       let trucks = res.body;
       this.addMarkers(map, trucks);
       this.findClosest();
-      this.setState;
     });
   }
 
+//Adds Autocomplete to Map Places Search Bar and updates Markers accordingly
   addAutocomplete (map) {
     //Grab input box and add autocomplete
     const input = document.getElementById('pac-input');
@@ -201,7 +85,7 @@ export default class Map extends React.Component {
       marker.setPosition(place.geometry.location);
       marker.setVisible(true);
 
-      var address = '';
+      let address = '';
       if (place.address_components) {
         address = [
           (place.address_components[0] && place.address_components[0].short_name || ''),
@@ -218,40 +102,15 @@ export default class Map extends React.Component {
     });
   }
 
+//Sets initial LatLng Object
   mapCenterLatLng () {
     let props = this.props;
     return new google.maps.LatLng(props.mapCenterLat, props.mapCenterLng);
   }
 
-  formatMarker (truck, map) {
-    //icon hosted from my google drive
-    let icon = 'https://049d1e9f5c8486fa15c905c1c2e7feafadc697fd-www.googledrive.com/host/0B781CHOXBe3wVjBPNFZzLVlNRVk/foodTruck.png';
-
-    let infowindow = this.setInfoWindowContent(truck);
-    var marker = new google.maps.Marker({
-      position: new google.maps.LatLng(truck.latitude, truck.longitude),
-      title: truck.applicant,
-      icon,
-      map
-    });
-    marker.addListener('mouseover', () => {
-      infowindow.open(map, marker);
-    });
-    marker.addListener('mouseout', () => {
-      infowindow.close(map, marker);
-    });
-    marker.addListener('click', () => {
-      console.log('CALLED')
-      let truckObj = {
-        info: truck,
-        marker
-      }
-      this.goToTruck(truckObj);
-    })
-    return marker;
-  }
-
+//Adds All Truck Markers to map
   addMarkers (map, trucks) {
+    console.log('Adding truck markers to map...');
     let center = this.state.mainMarker[0].getPosition();
     let markers = [];
     for (let i = 0; i < trucks.length; i++) {
@@ -268,31 +127,35 @@ export default class Map extends React.Component {
     this.setState({trucks: this.state.trucks.concat(markers) });
   }
 
-  findClosest (e) {
-    let center = this.state.mainMarker[0].getPosition();
-    let threshold = this.state.distThreshold || 10;
-    let trucks = this.state.trucks;
-    let closest = [];
-    for (let i = 0; i < trucks.length; i++) {
-      let dist = google.maps.geometry.spherical.computeDistanceBetween(center, trucks[i].marker.getPosition());
-      if (dist < Math.abs(threshold) * 25) {
-        closest.push(trucks[i]);
-      }
-    }
-    this.setState({ closestTrucks: closest});
-    if (e) {
-      e.preventDefault();
-    }
+//Formats Truck Markers with info window, icon, and listeners
+  formatMarker (truck, map) {
+    //icon hosted from my google drive
+    let icon = 'https://049d1e9f5c8486fa15c905c1c2e7feafadc697fd-www.googledrive.com/host/0B781CHOXBe3wVjBPNFZzLVlNRVk/foodTruck.png';
+
+    let infowindow = this.setInfoWindowContent(truck);
+    let marker = new google.maps.Marker({
+      position: new google.maps.LatLng(truck.latitude, truck.longitude),
+      title: truck.applicant,
+      icon,
+      map
+    });
+    marker.addListener('mouseover', () => {
+      infowindow.open(map, marker);
+    });
+    marker.addListener('mouseout', () => {
+      infowindow.close(map, marker);
+    });
+    marker.addListener('click', () => {
+      let truckObj = {
+        info: truck,
+        marker
+      };
+      this.goToTruck(truckObj);
+    });
+    return marker;
   }
 
-  updateMainMarker(marker) {
-    console.log("MARKER", marker)
-    this.state.mainMarker.pop().setMap(null);
-    this.setState({mainMarker: this.state.mainMarker.concat([marker])});
-    this.findClosest();
-    console.log("AFTER SSET STATE MAIN MARKER", this.state)
-  }
-
+//Sets info window content for each Truck Marker
   setInfoWindowContent (truck) {
     let contentString = (
       '<div id="content">'+
@@ -311,7 +174,36 @@ export default class Map extends React.Component {
     return infowindow;
   }
 
+//Finds and Updates list of closest Food Trucks to Main Marker location
+  findClosest (e) {
+    let threshold = this.state.distThreshold || 10;
+    console.log('Finding food trucks within a ' + threshold + ' minute walk...');
+    let center = this.state.mainMarker[0].getPosition();
+    let trucks = this.state.trucks;
+    let closest = [];
+    for (let i = 0; i < trucks.length; i++) {
+      let dist = google.maps.geometry.spherical.computeDistanceBetween(center, trucks[i].marker.getPosition());
+      if (dist < Math.abs(threshold) * 25) {
+        closest.push(trucks[i]);
+      }
+    }
+    this.setState({ closestTrucks: closest});
+    if (e) {
+      e.preventDefault();
+    }
+  }
+
+//Resets the Main Marker
+  updateMainMarker(marker) {
+    console.log('Setting new main marker location...');
+    this.state.mainMarker.pop().setMap(null);
+    this.setState({mainMarker: this.state.mainMarker.concat([marker])});
+    this.findClosest();
+  }
+
+//Centers the Map on selected Truck
   goToTruck(truck) {
+    console.log('Going to truck ', truck.info.applicant, ' at ', truck.info.address);
     let map = this.state.map[0];
     let marker = truck.marker;
     let previous = this.state.previousSelection.pop();
@@ -326,6 +218,7 @@ export default class Map extends React.Component {
     this.setState({ previousSelection: this.state.previousSelection.concat([{ marker, infowindow }]) });
   }
 
+//Updates Map Location based of Food Truck search result
   handleTruckSearch(truck) {
     let dividerIndex = truck.indexOf('@');
     let applicant = truck.slice(0, dividerIndex - 1);
@@ -341,6 +234,7 @@ export default class Map extends React.Component {
     }
   }
 
+//Updates distance threshold for findClosest Trucks
   updateWalkingDistance(e) {
     this.setState({
       distThreshold: Math.abs(e.target.value)
@@ -387,7 +281,7 @@ export default class Map extends React.Component {
   }
 }
 
-Map.defaultProps = {
+GoogleMap.defaultProps = {
   initialZoom: 17,
   mapCenterLat: 37.774929,
   mapCenterLng: -122.419416,
