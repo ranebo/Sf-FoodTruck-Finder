@@ -71,6 +71,7 @@ Run the test Mocha-Chai suite with `npm test`
 
 ```
 ## Additional Feature Ideas: ##
+  - Setup https: geolocation requires https for Chrome... works fine on localhost and Firefox
   - Center map Button to re-center map on current/choosen location
   - Show only nearby trucks Button (the same as displayed in closest list)
   - Links to vendor sites/menu
