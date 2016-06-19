@@ -10,7 +10,8 @@ SF Food Truck Finder
   - [Development Sever](#development-server)
   - [Testing](#testing)
   - [Application Architecture](#application-architecture)
-4. [For KQED](#for-kqed)
+4. [Additional Feature Ideas](#additional-feature-ideas)
+5. [For KQED](#for-kqed)
 
 
 ## Introduction
@@ -69,4 +70,22 @@ Run the test Mocha-Chai suite with `npm test`
                +---------------------+
 
 ```
+## Additional Feature Ideas: ##
+  - Center map Button to re-center map on current/choosen location
+  - Show only nearby trucks Button (the same as displayed in closest list)
+  - Links to vendor sites/menu
+  - Filter by currently open / sort closest list
+  - Google Directions:
+    - Click on marker will display route map between current position and selected truck
+    - Use google directions to more accurately find trucks within walking/bicycling/driving/transit distances
+
 ## For KQED ##
+
+- Description: See [Introduction](#introduction): This is a full stack application, but focused on front-end where most functionality and features lived.
+- TechStack Choice:
+  - Font-End: [React.JS](https://facebook.github.io/react/) - Used React to take advantage of its Virtual DOM for light-weight DOM manipulation and its component lifecycle system to correctly re-render on state changes.
+  - Back-End: [Node.JS](https://nodejs.org/en/) - Used Node for a few reasons. First, becuase the back-end needed to be relatively simple (just fetches food truck data from API and serves static files), it made sense to use a consistant language across the stack for rapid development. It has a single threaded non-blocking I/O allowing it to manage a fair amount of traffic. Furthermore, it is easy to scale with Node clusters (also [Ringpop](https://eng.uber.com/intro-to-ringpop/) is pretty cool).
+- Code Im Proud Of: TODO
+- Resume / Public Profile: [Linkedin](https://www.linkedin.com/in/ranegridley)
+- Hosted Cite: TODO
+
