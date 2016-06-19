@@ -100,10 +100,9 @@ export default class NearMeButton extends React.Component{
           title: "Choosen Location",
           map
         });
-
-        // infoWindow.setPosition(pos);
         infoWindow.setContent('found you.');
         map.setCenter(pos);
+        this.props.newMainMarker(marker);
     }, () => {
       handleLocationError(true, infoWindow, map.getCenter());
     });
