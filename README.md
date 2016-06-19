@@ -26,7 +26,7 @@ Trucks](https://data.sfgov.org/Permitting/Mobile-Food-Facility-Permit/rqzj-sfat)
 
 ## Usage
 
-Go to (URL HERE) to see it in action!
+Go to [SF Food Truck Finder](http://52.33.234.141:8000/) to see it in action!
 
 ## Development
 
@@ -90,5 +90,5 @@ Run the test Mocha-Chai suite with `npm test`
 - Note on Tests: I have never worked with google maps before, so a fair amount of time was used to research and understand how it works and not too much time on how to write tests for it. So tests are relatively light due to the time constraint and due to the fact that this app is mainly map feature rich. Always room for more tests.
 - Code Im Proud Of: TODO
 - Resume / Public Profile: [Linkedin](https://www.linkedin.com/in/ranegridley)
-- Hosted Cite: TODO
+- Hosted Cite: [SF Food Truck Finder](http://52.33.234.141:8000/)
 
