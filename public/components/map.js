@@ -15,7 +15,7 @@ export default class TruckSearch extends React.Component {
     super(props);
     this.state = {
       options: [],
-    }
+    };
   }
 
   componentWillReceiveProps() {
@@ -33,18 +33,101 @@ export default class TruckSearch extends React.Component {
   render() {
     return (
       <div className={'searchTrucks'}>
-        <h2 style={{color: 'lightgrey'}}>Search for a Food Truck!</h2>
-          <Datalist
-            className='truckOptionList'
-            list='truckOptions'
-            options= {this.state.options}
-            placeholder='e.g. Senor Sisig'
-            onOptionSelected={this.onOptionSelected.bind(this)}/>
+        <h2 style={{color: 'lightgrey'}}>Find a Food Truck!</h2>
+        <Datalist
+          className='truckOptionList'
+          list='truckOptions'
+          options= {this.state.options}
+          placeholder='e.g. Senor Sisig'
+          onOptionSelected={this.onOptionSelected.bind(this)}/>
       </div>
     )
   }
 }
 
+
+export default class WalkingTimeForm extends React.Component{
+  constructor(props) {
+    super(props);
+  }
+
+  closest(e) {
+    this.props.closest(e);
+  }
+
+  distance(e) {
+    this.props.distance(e);
+  }
+
+  render() {
+    return (
+      <Col md={4}>
+        <form>
+          <FormGroup>
+            <InputGroup>
+              <InputGroup.Button>
+                <Button onClick={this.closest.bind(this)} type='submit' bsStyle="primary">Walk Time</Button>
+              </InputGroup.Button>
+              <FormControl type='number' onChange={this.distance.bind(this)} value={this.props.threshold} />
+            </InputGroup>
+          </FormGroup>
+        </form>
+      </Col>
+    )
+  }
+}
+
+export default class NearMeButton extends React.Component{
+  constructor(props) {
+    super(props);
+  }
+
+  findUserLocation() {
+    console.log("ITWAS CALLED")
+    let map = this.props.map;
+    let infoWindow = new google.maps.InfoWindow({map});
+
+    // Try HTML5 geolocation.
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        var pos = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        let marker = new google.maps.Marker({
+          position: pos,
+          title: "Choosen Location",
+          map
+        });
+
+        // infoWindow.setPosition(pos);
+        infoWindow.setContent('found you.');
+        map.setCenter(pos);
+    }, () => {
+      handleLocationError(true, infoWindow, map.getCenter());
+    });
+    } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, infoWindow, map.getCenter());
+      }
+
+    function handleLocationError(browserHasGeolocation, infoWindow, pos) {
+      infoWindow.setPosition(pos);
+      infoWindow.setContent(browserHasGeolocation ?
+                            'Error: The Geolocation service failed.' :
+                          'Error: Your browser doesn\'t support geolocation.');
+    }
+  }
+
+  render() {
+    return (
+      <Col md={8}>
+        <Button onClick={this.findUserLocation.bind(this)} bsStyle="primary">Near Me</Button>
+      </Col>
+    )
+  }
+}
 
 export default class Map extends React.Component {
   constructor(props) {
@@ -55,7 +138,7 @@ export default class Map extends React.Component {
       trucks: [],
       closestTrucks: [],
       previousSelection: [],
-      distThreshold: '', //Initialize about 3 block distance
+      distThreshold: '',
     };
   }
 
@@ -86,6 +169,52 @@ export default class Map extends React.Component {
       this.addMarkers(map, trucks);
       this.findClosest();
       this.setState;
+    });
+  }
+
+  addAutocomplete (map) {
+    //Grab input box and add autocomplete
+    const input = document.getElementById('pac-input');
+    const autocomplete = new google.maps.places.Autocomplete(input);
+    autocomplete.bindTo('bounds', map);
+    let infowindow = new google.maps.InfoWindow();
+    let marker = new google.maps.Marker({
+      map: map,
+      anchorPoint: new google.maps.Point(0, -29)
+    });
+    //add listener for when user selects location
+    autocomplete.addListener('place_changed', () => {
+      infowindow.close();
+      marker.setVisible(false);
+      let place = autocomplete.getPlace();
+
+      if (!place.geometry) {
+        window.alert("Autocomplete's returned place contains no geometry");
+        return;
+      }
+      if (place.geometry.viewport) {
+        map.fitBounds(place.geometry.viewport);
+      } else {
+        map.setCenter(place.geometry.location);
+        map.setZoom(17);
+      }
+      marker.setPosition(place.geometry.location);
+      marker.setVisible(true);
+
+      var address = '';
+      if (place.address_components) {
+        address = [
+          (place.address_components[0] && place.address_components[0].short_name || ''),
+          (place.address_components[1] && place.address_components[1].short_name || ''),
+          (place.address_components[2] && place.address_components[2].short_name || '')
+        ].join(' ');
+      }
+      infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
+      infowindow.open(map, marker);
+      autocomplete.setTypes(['address', 'establishment', 'geocode']);
+      //remove old place marker from state and add new one
+      this.updateMainMarker(marker);
+      this.addAutocomplete(map);
     });
   }
 
@@ -143,56 +272,17 @@ export default class Map extends React.Component {
       }
     }
     this.setState({ closestTrucks: closest});
-    e.preventDefault()
+    if (e) {
+      e.preventDefault();
+    }
   }
 
-
-  addAutocomplete (map) {
-    //Grab input box and add autocomplete
-    const input = document.getElementById('pac-input');
-    const autocomplete = new google.maps.places.Autocomplete(input);
-    autocomplete.bindTo('bounds', map);
-    let infowindow = new google.maps.InfoWindow();
-    let marker = new google.maps.Marker({
-      map: map,
-      anchorPoint: new google.maps.Point(0, -29)
-    });
-    //add listener for when user selects location
-    autocomplete.addListener('place_changed', () => {
-      infowindow.close();
-      marker.setVisible(false);
-      let place = autocomplete.getPlace();
-
-      if (!place.geometry) {
-        window.alert("Autocomplete's returned place contains no geometry");
-        return;
-      }
-      if (place.geometry.viewport) {
-        map.fitBounds(place.geometry.viewport);
-      } else {
-        map.setCenter(place.geometry.location);
-        map.setZoom(17);
-      }
-      marker.setPosition(place.geometry.location);
-      marker.setVisible(true);
-
-      var address = '';
-      if (place.address_components) {
-        address = [
-          (place.address_components[0] && place.address_components[0].short_name || ''),
-          (place.address_components[1] && place.address_components[1].short_name || ''),
-          (place.address_components[2] && place.address_components[2].short_name || '')
-        ].join(' ');
-      }
-      infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
-      infowindow.open(map, marker);
-      autocomplete.setTypes(['address', 'establishment', 'geocode']);
-      //remove old place marker from state and add new one
-      this.state.mainMarker.pop().setMap(null);
-      this.setState({mainMarker: this.state.mainMarker.concat([marker])});
-      this.findClosest();
-      this.addAutocomplete(map);
-    });
+  updateMainMarker(marker) {
+    console.log("MARKER", marker)
+    this.state.mainMarker.pop().setMap(null);
+    this.setState({mainMarker: this.state.mainMarker.concat([marker])});
+    this.findClosest();
+    console.log("AFTER SSET STATE MAIN MARKER", this.state)
   }
 
   setInfoWindowContent (truck) {
@@ -230,7 +320,6 @@ export default class Map extends React.Component {
 
   handleTruckSearch(truck) {
     let dividerIndex = truck.indexOf('@');
-    console.log("Madeit",  truck, dividerIndex);
     let applicant = truck.slice(0, dividerIndex - 1);
     let address = truck.slice(dividerIndex + 2);
     let trucks = this.state.trucks;
@@ -239,6 +328,12 @@ export default class Map extends React.Component {
       if (trucks[i].info.applicant === applicant && trucks[i].info.address === address ) {
         foundTruck = trucks[i];
         this.goToTruck(foundTruck);
+        // this.updateMainMarker(new google.maps.Marker({
+        //   title: foundTruck.info.applicant,
+        //   map: this.state.map[0],
+        //   position: new google.maps.LatLng(foundTruck.info.latitude, foundTruck.info.longitude)
+        // }));
+        // console.log(this.state)
         return;
       }
     }
@@ -268,21 +363,8 @@ export default class Map extends React.Component {
         </Jumbotron>
         <Grid>
           <Row>
-            <Col md={4}>
-              <form>
-                <FormGroup>
-                  <InputGroup>
-                    <InputGroup.Button>
-                      <Button onClick={this.findClosest.bind(this)} type='submit' bsStyle="primary">Walk Time</Button>
-                    </InputGroup.Button>
-                    <FormControl type='number' onChange={this.updateWalkingDistance.bind(this)} value={this.state.distThreshold} />
-                  </InputGroup>
-                </FormGroup>
-              </form>
-            </Col>
-            <Col md={8}>
-            <Button  bsStyle="primary">Near Me</Button>
-            </Col>
+            <WalkingTimeForm  threshold={this.state.distThreshold} distance={this.updateWalkingDistance.bind(this)} closest={this.findClosest.bind(this)}/>
+            <NearMeButton map={this.state.map[0]} newMainMarker={this.updateMainMarker.bind(this)} />
           </Row>
           <Row>
             <Col md={4}>
