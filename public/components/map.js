@@ -1,42 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { default as _ } from 'lodash';
-import request from '../util/rest-helpers.js';
 import styles from '../styles/styles.css';
-import { Grid, Col, Row, Panel, Jumbotron } from 'react-bootstrap';
-
-
-
-
-
-
-export default class ClosestListEntry extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-    };
-  }
-
-  render() {
-    const truck = this.props.truck;
-    return (
-      <div onClick={this.props.handleClick} className={'listEntry'}>
-        <h4>{truck.info.applicant}</h4>
-        <p>Address: {truck.info.address}</p>
-        <p>Hours: {truck.info.dayshours}</p>
-        <p>{truck.info.fooditems}</p>
-      </div>
-    )
-  }
-}
-
-
-
-
-
-
-
-
+import request from '../util/rest-helpers.js';
+import ClosestListEntry from './closest-list-entry.js';
+import { Grid, Col, Row, Panel, Jumbotron, Image } from 'react-bootstrap';
 
 export default class Map extends React.Component {
   constructor(props) {
@@ -47,6 +15,7 @@ export default class Map extends React.Component {
       trucks: [],
       closestTrucks: [],
       previousSelection: [],
+      searchOptions: [],
       distThreshold: 250, //Initialize about 3 block distance
     };
   }
@@ -76,7 +45,8 @@ export default class Map extends React.Component {
       if (err) { console.log("Error getting food truck list (Map Component: ", err); }
       let trucks = res.body;
       this.addMarkers(map, trucks);
-     this.findClosest();
+      this.findClosest();
+      this.setState
     });
   }
 
@@ -114,7 +84,8 @@ export default class Map extends React.Component {
         marker: this.formatMarker(truck, map),
       });
     }
-    this.setState({trucks: this.state.trucks.concat(markers)});
+    this.setState({trucks: this.state.trucks.concat(markers) });
+    console.log(this.state);
   }
 
   findClosest () {
@@ -188,7 +159,6 @@ export default class Map extends React.Component {
           '<h5>' + truck.fooditems + '</h5>'+
           '<p>Hours: '+ truck.dayshours +'</p>'+
           '<p>Address: '+ truck.address + '</p>' +
-        //  '<p>Get schedule: <a href="' + truck.schedule + '" >'+ truck.applicant + '</a> '+ '</p>' +
         '</div>'+
       '</div>'
     );
@@ -206,37 +176,54 @@ export default class Map extends React.Component {
     if (previous) {
       previous.infowindow.close(map, previous.marker);
     }
-    map.panTo(marker.getPosition())
-    map.setCenter(marker.getPosition())
-    map.setZoom(17)
-
+    map.panTo(marker.getPosition());
+    map.setCenter(marker.getPosition());
+    map.setZoom(17);
     infowindow.open(map, marker);
-    this.setState({ previousSelection: this.state.previousSelection.concat([{ marker, infowindow }]) })
+    this.setState({ previousSelection: this.state.previousSelection.concat([{ marker, infowindow }]) });
   }
 
 
   render() {
     return (
-      <Grid>
-        <Row>
-          <Jumbotron>
-            <h1>Find Food Trucks Near You!</h1>
-          </Jumbotron>
-        </Row>
-        <Row>
-          <Col md={4}>
-            <Panel id={'listConatiner'} header={<h1>Within a 10 minute walk: </h1>}>
-              {this.state.closestTrucks.map((truck, i) =>
-                <ClosestListEntry handleClick={this.goToTruck.bind(this, truck)} key={i} truck={truck}/>
-              )}
-            </Panel>
-          </Col>
-          <Col md={8}>
-            <input id={'pac-input'} className={'controls'} type={'text'} placeholder={'Enter a location...'} />
-            <div id={'map'} ref='map'></div>
-          </Col>
-        </Row>
-      </Grid>
+      <div>
+        <Jumbotron className={'header'}>
+          <Grid fluid>
+            <Row>
+              <Col md={5}>
+                  <Image  className={'logo'} width="200" responsive src='https://049d1e9f5c8486fa15c905c1c2e7feafadc697fd-www.googledrive.com/host/0B781CHOXBe3wVjBPNFZzLVlNRVk/foodTruck.png'/>
+              </Col>
+              <Col md={7}>
+                <div className={'searchTrucks'}>
+                  <h2 style={{color: 'lightgrey'}}>Search for a Food Truck!</h2>
+                    <datalist id={'truckOptions'}>
+                      <option value={'oneoption'}/>
+                      <option value={'twooption'}/>
+                      <option value={'threeoption'}/>
+                      <option value={'fouroption'}/>
+                  </datalist>
+                  <input className={'truckOptionList'} type="text" list={'truckOptions'} placeholder={'i.g. Senor Sisig...'}/>
+                  </div>
+              </Col>
+            </Row>
+          </Grid>
+        </Jumbotron>
+        <Grid>
+          <Row>
+            <Col md={4}>
+              <Panel id={'listConatiner'} header={<h1>Within a 10 minute walk: </h1>}>
+                {this.state.closestTrucks.map((truck, i) =>
+                  <ClosestListEntry handleClick={this.goToTruck.bind(this, truck)} key={i} truck={truck}/>
+                )}
+              </Panel>
+            </Col>
+            <Col md={8}>
+              <input id={'pac-input'} className={'controls'} type={'text'} placeholder={'Enter a location...'} />
+              <div id={'map'} ref='map'></div>
+            </Col>
+          </Row>
+        </Grid>
+      </div>
     )
   }
 }

@@ -36,7 +36,8 @@ module.exports = {
           presets: ['es2015', 'react', 'stage-0', 'react-hmre'],
         }
       },
-      { test: /\.css$/, loader: "style-loader!css-loader" }
+      { test: /\.css$/, loader: "style-loader!css-loader" },
+      { test: /\.(png|jpg)$/, loader: 'file-loader?name=assets/[name].[ext]' },
     ]
   },
 };
