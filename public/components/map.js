@@ -101,6 +101,7 @@ export default class NearMeButton extends React.Component{
           map
         });
         infoWindow.setContent('found you.');
+        infoWindow.open(map, marker);
         map.setCenter(pos);
         this.props.newMainMarker(marker);
     }, () => {
@@ -239,6 +240,14 @@ export default class Map extends React.Component {
     marker.addListener('mouseout', () => {
       infowindow.close(map, marker);
     });
+    marker.addListener('click', () => {
+      console.log('CALLED')
+      let truckObj = {
+        info: truck,
+        marker
+      }
+      this.goToTruck(truckObj);
+    })
     return marker;
   }
 
@@ -327,12 +336,6 @@ export default class Map extends React.Component {
       if (trucks[i].info.applicant === applicant && trucks[i].info.address === address ) {
         foundTruck = trucks[i];
         this.goToTruck(foundTruck);
-        // this.updateMainMarker(new google.maps.Marker({
-        //   title: foundTruck.info.applicant,
-        //   map: this.state.map[0],
-        //   position: new google.maps.LatLng(foundTruck.info.latitude, foundTruck.info.longitude)
-        // }));
-        // console.log(this.state)
         return;
       }
     }
