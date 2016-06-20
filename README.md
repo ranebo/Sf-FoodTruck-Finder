@@ -10,8 +10,9 @@ SF Food Truck Finder
   - [Development Sever](#development-server)
   - [Testing](#testing)
   - [Application Architecture](#application-architecture)
-4. [Additional Feature Ideas](#additional-feature-ideas)
-5. [For KQED](#for-kqed)
+4. [Production](#production)
+5. [Additional Feature Ideas](#additional-feature-ideas)
+6. [For KQED](#for-kqed)
 
 
 ## Introduction
@@ -70,7 +71,15 @@ Run the test Mocha-Chai suite with `npm test`
                +---------------------+
 
 ```
-## Additional Feature Ideas: ##
+## Production ##
+
+Run the following:
+```
+export NODE_ENV='production'
+node ./node_modules/webpack/bin/webpack.js -p --config webpack.production.config.js
+```
+
+## Additional Feature Ideas ##
   - Setup domain name and https: geolocation requires https for Chrome... works fine on localhost and Firefox
   - Center map Button to re-center map on current/choosen location
   - Show only nearby trucks Button (the same as displayed in closest list)
@@ -86,7 +95,7 @@ Run the test Mocha-Chai suite with `npm test`
 - TechStack Choice:
   - Font-End: [React.JS](https://facebook.github.io/react/) - Used React to take advantage of its Virtual DOM for light-weight and quick DOM manipulation and its component lifecycle system to correctly re-render on state changes.
 
-  - Back-End: [Node.JS](https://nodejs.org/en/) - Used Node for a few reasons. First, becuase the back-end needed to be relatively simple (just fetches and sends food truck data from API and serves static files), it made sense to use a consistant language across the stack for rapid development. It has a single threaded non-blocking I/O allowing it to manage a fair amount of traffic. Furthermore, it is easy to scale with Node clusters (also [Ringpop](https://eng.uber.com/intro-to-ringpop/) is pretty cool).
+  - Back-End: [Node.JS](https://nodejs.org/en/) - Used Node for a few reasons. First, becuase the back-end needed to be relatively simple (just fetches and sends food truck data from API and serves static files), it made sense to use a consistant language across the stack for rapid development. It has a single threaded non-blocking I/O allowing it to manage a fair amount of traffic. Furthermore, it is easy to scale with Node clusters (also [Ringpop](https://eng.uber.com/intro-to-ringpop/) is pretty cool). Webpack set up was mostly boiler plate ([Main Reference](https://github.com/christianalfoni/webpack-express-boilerplate))
 - Note on Tests: I have never worked with google maps before, so a fair amount of time was used to research and understand how it works and not too much time on how to write tests for it. So tests are relatively light due to the time constraint and due to the fact that this app is mainly map feature rich. Always room for more tests.
 - Code Im Proud Of: TODO
 - Resume / Public Profile: [Linkedin](https://www.linkedin.com/in/ranegridley)

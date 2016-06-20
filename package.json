@@ -9,7 +9,7 @@
   },
   "author": "Rane Gridley",
   "license": "ISC",
-   "repository": {
+  "repository": {
     "type": "git",
     "url": "git+https://github.com/ranebo/Sf-FoodTruck-Finder.git"
   },
@@ -19,6 +19,7 @@
   "homepage": "https://github.com/ranebo/Sf-FoodTruck-Finder#readme",
   "dependencies": {
     "express": "^4.14.0",
+    "extract-text-webpack-plugin": "^1.0.1",
     "html-webpack-plugin": "^2.21.0",
     "nodemon": "^1.9.2",
     "react": "^15.1.0",
@@ -26,6 +27,7 @@
     "react-datalist": "^3.0.0",
     "react-dom": "^15.1.0",
     "request-promise": "^3.0.0",
+    "stats-webpack-plugin": "^0.3.1",
     "superagent": "^2.0.0",
     "webpack": "^1.13.1",
     "webpack-dev-server": "^1.14.1"

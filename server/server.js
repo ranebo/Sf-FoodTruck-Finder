@@ -13,6 +13,7 @@ const isDeveloping = process.env.NODE_ENV !== 'production';
 
 //Use Webpack dev middleware for development.
 if (isDeveloping) {
+  console.log('Developing!!!');
   const compiler = webpack(config);
   const middleware = webpackMiddleware(compiler, {
     publicPath: config.output.publicPath,
@@ -30,12 +31,14 @@ if (isDeveloping) {
   app.use(middleware);
   app.use(webpackHotMiddleware(compiler));
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '/../public/index.html'));
+    res.write(middleware.fileSystem.readFileSync(path.join(__dirname, '../dist/index.html')));
+    res.end();
   });
 } else {
-  app.use(express.static(__dirname + '/../public'));
+  console.log('Production Junction!')
+  app.use(express.static(__dirname + '/../dist'));
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '/../public/index.html'));
+    res.sendFile(path.join(__dirname, '../dist/index.html'));
   });
 }
 //Route to retrieve Food Truck Data
