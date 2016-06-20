@@ -84,28 +84,28 @@ forever server/index.js
 
 ## Additional Feature Ideas ##
   - Setup domain name and https: geolocation requires https for Chrome... works fine on localhost and Firefox
-  - Center map Button to re-center map on current/choosen location
+  - Center map Button to re-center map on current/choosen location / Make map movement transitions smoother
   - Show only nearby trucks Button (the same as displayed in closest list)
   - Links to vendor sites/menu
-  - Filter by currently Open / sort closest list
+  - Filter by currently open trucks / sort closest trucks list
   - Google Directions:
-    - Click on marker will display route map between current position and selected truck
     - Use google directions to more accurately find trucks within walking/bicycling/driving/transit distances
+    - Better route look and add directions for walking/bicycling/driving/transit
 
 ## For KQED ##
 
 - Description: See [Introduction](#introduction): This is a full stack application, but focused on front-end where most functionality and features lived.
 - Google Map Features:
-  - Finds user location (needs https for Chrome)
   - Autocomplete search for nearby Food Trucks by address, establishment, or geocode
   - Add Food Truck icons and Info Windows (with listeners)
+  - Double Click on Food Truck to show route from current set location
 - Other App Features:
+  - Finds user location with 'Near Me' button(needs https for Chrome)
   - Autocomplete (by company name) search for specific Food Truck - submit shows truck on map
-  - Leftside list of nearby Food Trucks with info - clicking one will show truck on map
-  - Change walking time distance (i.e. change nearby distance check threshold)
+  - Leftside list of nearby Food Trucks with info - clicking one will show route to truck on map
+  - Change walking time distance (i.e. change nearby distance check threshold for closest truck list)
 - Tech Stack Choice:
-  - Font-End: [React.JS](https://facebook.github.io/react/) - Used React to take advantage of its Virtual DOM for light-weight and quick DOM manipulation and its component lifecycle system to correctly re-render on state changes. Furthermore, JavaScript is great for front-end work and Google Maps Javascript API has great [reference docs](https://developers.google.com/maps/documentation/javascript/).
-
+  - Font-End: [React.JS](https://facebook.github.io/react/) - Used React to take advantage of its Virtual DOM for light-weight and quick DOM manipulation and its component lifecycle system to correctly re-render on state changes. Furthermore, JavaScript is great for front-end development and Google Maps Javascript API has great [reference docs](https://developers.google.com/maps/documentation/javascript/).
   - Back-End: [Node.JS](https://nodejs.org/en/) - Used Node for a few reasons. First, becuase the back-end needed to be relatively simple (just fetches and sends food truck data from API and serves static files), it made sense to use a consistant language across the stack for rapid development. It has a single threaded non-blocking I/O allowing it to manage a fair amount of traffic. Furthermore, it is easy to scale with Node clusters (also [Ringpop](https://eng.uber.com/intro-to-ringpop/) is pretty cool). Webpack set up was mostly boiler plate ([Main Reference](https://github.com/christianalfoni/webpack-express-boilerplate))
 - Note on Tests: I have never worked with google maps before, so a fair amount of time was used to research and understand how it works and not too much time on how to write tests for it. So tests are relatively light due to the time constraint and due to the fact that this app is mainly map feature rich. Always room for more tests.
 - Resume / Public Profile: [Linkedin](https://www.linkedin.com/in/ranegridley)

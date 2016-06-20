@@ -18,6 +18,7 @@ export default class GoogleMap extends React.Component {
       trucks: [],
       closestTrucks: [],
       previousSelection: [],
+      previousDirections: [],
       distThreshold: '',
     };
   }
@@ -145,7 +146,7 @@ export default class GoogleMap extends React.Component {
     marker.addListener('mouseout', () => {
       infowindow.close(map, marker);
     });
-    marker.addListener('click', () => {
+    marker.addListener('dblclick', () => {
       let truckObj = {
         info: truck,
         marker
@@ -203,32 +204,62 @@ export default class GoogleMap extends React.Component {
 
 //Centers the Map on selected Truck
   goToTruck(truck) {
-    console.log('Going to truck ', truck.info.applicant, ' at ', truck.info.address);
+    console.log('Going to truck ', truck.info.applicant, ' at ', truck.info.address + '. Setting route...');
     let map = this.state.map[0];
     let marker = truck.marker;
     let previous = this.state.previousSelection.pop();
     let infowindow = this.setInfoWindowContent(truck.info);
+    let directionsService = new google.maps.DirectionsService;
+    let directionsDisplay = new google.maps.DirectionsRenderer;
+    if (this.state.previousDirections.length) {
+      this.state.previousDirections.pop().setMap(null);
+    }
+    directionsDisplay.setMap(map);
+    directionsService.route({
+      origin: marker.getPosition(),
+      destination: this.state.mainMarker[0].getPosition(),
+      travelMode: google.maps.TravelMode.WALKING
+    }, (response, status) => {
+      if (status === google.maps.DirectionsStatus.OK) {
+        directionsDisplay.setDirections(response);
+      } else {
+        window.alert('Directions request failed due to ' + status);
+      }
+    });
     if (previous) {
       previous.infowindow.close(map, previous.marker);
     }
-    map.panTo(marker.getPosition());
-    map.setCenter(marker.getPosition());
-    map.setZoom(17);
     infowindow.open(map, marker);
-    this.setState({ previousSelection: this.state.previousSelection.concat([{ marker, infowindow }]) });
+    map.panTo(marker.getPosition());
+    this.setState({
+      previousSelection: this.state.previousSelection.concat([{ marker, infowindow }]),
+      previousDirections: this.state.previousDirections.concat([directionsDisplay])
+     });
   }
 
 //Updates Map Location based of Food Truck search result
   handleTruckSearch(truck) {
-    let dividerIndex = truck.indexOf('@');
-    let applicant = truck.slice(0, dividerIndex - 1);
-    let address = truck.slice(dividerIndex + 2);
+    let map = this.state.map[0];
     let trucks = this.state.trucks;
-    let foundTruck;
+    let dividerIndex = truck.indexOf('@');
+    let address = truck.slice(dividerIndex + 2);
+    let applicant = truck.slice(0, dividerIndex - 1);
+    let previous = this.state.previousSelection.pop();
     for (let i = 0; i < trucks.length; i++ ) {
       if (trucks[i].info.applicant === applicant && trucks[i].info.address === address ) {
-        foundTruck = trucks[i];
-        this.goToTruck(foundTruck);
+        let marker = trucks[i].marker;
+        let info = trucks[i].info;
+        console.log('Going to truck ', info.applicant, 'at', info.address);
+        let infowindow = this.setInfoWindowContent(info);
+        if (previous) {
+          previous.infowindow.close(map, previous.marker);
+        }
+        infowindow.open(map, marker);
+        map.setZoom(17);
+        map.panTo(marker.getPosition());
+        this.setState({
+          previousSelection: this.state.previousSelection.concat([{ marker, infowindow }])
+        });
         return;
       }
     }
