@@ -65,9 +65,9 @@ Run the test Mocha-Chai suite with `npm test`
                |                     |      |  API   |
                |      Node.JS        |      +--^-+---+
                |                     |         | |
-               |                     +---------+ |
-               |                     <-----------+
-               |                     |
+               |          +-------+  +---------+ |
+               |          | Cache |  <-----------+
+               |          +-------+  |
                +---------------------+
 
 ```
@@ -75,7 +75,7 @@ Run the test Mocha-Chai suite with `npm test`
 
 Setup Crontab (e.g. `crontab -e`) :
 ```
-1 0 * * * /usr/local/bin/node /YOUR/PATH/TO/Sf-FoodTruck-Finder/server/cron.js
+0 0 * * * /usr/local/bin/node /YOUR/PATH/TO/Sf-FoodTruck-Finder/server/cron.js
 
 ```
 
