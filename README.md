@@ -32,14 +32,14 @@ Go to [SF Food Truck Finder](http://52.33.234.141:8000/) to see it in action!
 ## Development
 
 ### Requirements
-- Node 5.x
+- Node 5.x (may need to add 'use strict'; I developed with Node 6.x)
 
 ### Installing Dependencies
 Run `npm install` from the root directory.
 
 ### Development Server
 
-Simply run `npm start` to fire up the express server and Webpack middleware, which serves a live, hot-reloading version of the application.
+Run `npm start` to fire up the express server and Webpack middleware, which serves a live, hot-reloading version of the application.
 
 ### Testing
 Run the test Mocha-Chai suite with `npm test`
@@ -76,7 +76,6 @@ Run the test Mocha-Chai suite with `npm test`
 Setup Crontab (e.g. `crontab -e`) :
 ```
 0 0 * * * /usr/local/bin/node /YOUR/PATH/TO/Sf-FoodTruck-Finder/server/cron.js
-
 ```
 
 Run the following from project directory:
@@ -85,7 +84,6 @@ export NODE_ENV='production'
 node ./node_modules/webpack/bin/webpack.js -p --config webpack.production.config.js
 npm install -g forever
 forever server/index.js
-
 ```
 
 ## Additional Feature Ideas and TODOS ##
@@ -109,14 +107,14 @@ forever server/index.js
   - Double Click on Food Truck to show route from current set location
 - Other App Features:
   - Finds user location with 'Near Me' button(needs https for Chrome)
-  - Autocomplete (by company name) search for specific Food Truck - submit shows truck on map
-  - Leftside list of nearby Food Trucks with info - clicking one will show route to truck on map
+  - Autocomplete search for specific Food Truck (by company name) - submit shows truck on map
+  - Leftside list of nearby Food Trucks with truck info - clicking one will show route to truck on map
   - Change walking time distance (i.e. change nearby distance check threshold for closest truck list)
   - Back-end uses a simple cache to serve faster responses, I have setup a cronjob to update cache
 - Tech Stack Choice:
   - Font-End: [React.JS](https://facebook.github.io/react/) - Used React to take advantage of its Virtual DOM for light-weight and quick DOM manipulation and its component lifecycle system to correctly re-render on state changes. Furthermore, JavaScript is great for front-end development and Google Maps Javascript API has great [reference docs](https://developers.google.com/maps/documentation/javascript/).
-  - Back-End: [Node.JS](https://nodejs.org/en/) - Used Node for a few reasons. First, becuase the back-end needed to be relatively simple (just fetches and sends food truck data from API and serves static files), it made sense to use a consistant language across the stack for rapid development. It has a single threaded non-blocking I/O allowing it to manage a fair amount of traffic. Furthermore, it is easy to scale with Node clusters (also [Ringpop](https://eng.uber.com/intro-to-ringpop/) is pretty cool). Webpack set up was mostly boiler plate ([Main Reference](https://github.com/christianalfoni/webpack-express-boilerplate))
-- Note on Tests: I have never worked with google maps before, so a fair amount of time was used to research and understand how it works and not too much time on how to write tests for it. So tests are relatively light due to the time constraint and due to the fact that this app is mainly map feature rich. Always room for more tests.
+  - Back-End: [Node.JS](https://nodejs.org/en/) with [Express.JS](http://expressjs.com/)- Used Node with Express for a few reasons. First, becuase the back-end needed to be relatively simple (just fetches and sends food truck data from API and serves static files), it made sense to use a consistant language across the stack for rapid development. It has a single threaded non-blocking I/O allowing it to manage a fair amount of traffic. Furthermore, it is easy to scale with Node clusters (also [Ringpop](https://eng.uber.com/intro-to-ringpop/) is pretty cool). Webpack set up was mostly boiler plate, with some minor changes ([main reference](https://github.com/christianalfoni/webpack-express-boilerplate)).
+- Note on Tests: I have never worked with google maps before, so a fair amount of time was used to research and understand how it works and not too much time on how to write tests for it. So tests are relatively light due to the time constraint and due to the fact that this app is mainly map feature rich. Always room for more tests!
 - Resume / Public Profile: [Linkedin](https://www.linkedin.com/in/ranegridley)
 - Hosted Cite: [SF Food Truck Finder](http://52.33.234.141:8000/) (deployed on Amazon EC2)
 
