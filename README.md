@@ -73,10 +73,13 @@ Run the test Mocha-Chai suite with `npm test`
 ```
 ## Production ##
 
-Run the following:
+Run the following from project directory:
 ```
 export NODE_ENV='production'
 node ./node_modules/webpack/bin/webpack.js -p --config webpack.production.config.js
+npm install -g forever
+forever server/index.js
+
 ```
 
 ## Additional Feature Ideas ##
