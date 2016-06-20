@@ -99,6 +99,13 @@ export default class GoogleMap extends React.Component {
       autocomplete.setTypes(['address', 'establishment', 'geocode']);
       //remove old place marker from state and add new one
       this.updateMainMarker(marker);
+      if (this.state.previousDirections.length) {
+        this.state.previousDirections.pop().setMap(null);
+      }
+      if (this.state.previousSelection.length) {
+        let previous = this.state.previousSelection.pop();
+        previous.infowindow.close(map, previous.marker);
+      }
       this.addAutocomplete(map);
     });
   }
