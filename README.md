@@ -71,7 +71,7 @@ Run the test Mocha-Chai suite with `npm test`
 
 ```
 ## Additional Feature Ideas: ##
-  - Setup https: geolocation requires https for Chrome... works fine on localhost and Firefox
+  - Setup domain name and https: geolocation requires https for Chrome... works fine on localhost and Firefox
   - Center map Button to re-center map on current/choosen location
   - Show only nearby trucks Button (the same as displayed in closest list)
   - Links to vendor sites/menu
@@ -90,5 +90,5 @@ Run the test Mocha-Chai suite with `npm test`
 - Note on Tests: I have never worked with google maps before, so a fair amount of time was used to research and understand how it works and not too much time on how to write tests for it. So tests are relatively light due to the time constraint and due to the fact that this app is mainly map feature rich. Always room for more tests.
 - Code Im Proud Of: TODO
 - Resume / Public Profile: [Linkedin](https://www.linkedin.com/in/ranegridley)
-- Hosted Cite: [SF Food Truck Finder](http://52.33.234.141:8000/)
+- Hosted Cite: [SF Food Truck Finder](http://52.33.234.141:8000/) (deployed on Amazon EC2)
 
