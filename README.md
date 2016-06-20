@@ -84,13 +84,15 @@ forever server/index.js
 
 ## Additional Feature Ideas ##
   - Setup domain name and https: geolocation requires https for Chrome... works fine on localhost and Firefox
-  - Center map Button to re-center map on current/choosen location / Make map movement transitions smoother
+  - Center map Button to re-center map on current/choosen location
+  - Make map movement transitions smoother
   - Show only nearby trucks Button (the same as displayed in closest list)
   - Links to vendor sites/menu
-  - Filter by currently open trucks / sort closest trucks list
+  - Filter by currently open trucks / Sort closest trucks list by distance
+  - Add draggable features for markers (Main Marker, Route markers)
   - Google Directions:
     - Use google directions to more accurately find trucks within walking/bicycling/driving/transit distances
-    - Better route look and add directions for walking/bicycling/driving/transit
+    - Better route paths and display and add directions (step-by-step) for walking/bicycling/driving/transit
 
 ## For KQED ##
 
