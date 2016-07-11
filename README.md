@@ -99,7 +99,7 @@ forever server/index.js
     - Use google directions to more accurately find trucks within walking/bicycling/driving/transit distances
     - Better route paths and display and add directions (step-by-step) for walking/bicycling/driving/transit
 
-## For KQED ##
+<!-- ## For KQED ##
 
 - Description: See [Introduction](#introduction): This is a full stack application, but focused on front-end where most functionality and features lived.
 - Google Map Features:
@@ -117,5 +117,5 @@ forever server/index.js
   - Back-End: [Node.JS](https://nodejs.org/en/) with [Express.JS](http://expressjs.com/)- Used Node with Express for a few reasons. First, becuase the back-end needed to be relatively simple (just fetches and sends food truck data from API and serves static files), it made sense to use a consistant language across the stack for rapid development. It has a single threaded non-blocking I/O allowing it to manage a fair amount of traffic. Furthermore, it is easy to scale with Node clusters (also [Ringpop](https://eng.uber.com/intro-to-ringpop/) is pretty cool). Webpack set up was mostly boiler plate, with some minor changes ([main reference](https://github.com/christianalfoni/webpack-express-boilerplate)).
 - Note on Tests: I have never worked with google maps before, so a fair amount of time was used to research and understand how it works and not too much time on how to write tests for it. So tests are relatively light due to the time constraint and due to the fact that this app is mainly map feature rich. Always room for more tests!
 - Resume / Public Profile: [Resume](https://drive.google.com/open?id=0B781CHOXBe3wQVVOVmFhOUU1Rk0) / [Linkedin](https://www.linkedin.com/in/ranegridley)
-- Hosted Cite: [SF Food Truck Finder](http://52.33.234.141:8000/) (deployed on Amazon EC2)
+- Hosted Cite: [SF Food Truck Finder](http://52.33.234.141:8000/) (deployed on Amazon EC2) -->
 

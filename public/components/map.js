@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { default as _ } from 'lodash';
 import styles from '../styles/styles.css';
 import TruckSearch from './truck-search.js';
 import request from '../util/rest-helpers.js';
