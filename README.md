@@ -12,8 +12,6 @@ SF Food Truck Finder
   - [Application Architecture](#application-architecture)
 4. [Production](#production)
 5. [Additional Feature Ideas and TODOS](#additional-feature-ideas-and-todos)
-6. [For KQED](#for-kqed)
-
 
 ## Introduction
 
